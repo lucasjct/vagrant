@@ -11,6 +11,8 @@ Vagrant.configure("2") do |config|
 
 ######################## Configuração VM - SHELL COMO PROVISION ###############################
 #             Instalação do Mysql                                                             #  
+#                                                                                             #
+#                                                                                           #
 #                                                                                             #                              
 ###############################################################################################
 
@@ -22,9 +24,11 @@ Vagrant.configure("2") do |config|
 #Public Network, que possibilita o acesso à máquina virtual por diversos computadores em uma única rede pública.
     mysql.vm.network "public_network", ip: "192.168.0.24"
 
-# Provisions do Vagrant
+# Provisions do Vagrant, configuração da chave ssh
     mysql.vm.provision "shell", 
         inline: "cat /configs/id_bionic.pub >> .ssh/authorized_keys"
+
+    
     mysql.vm.provision "shell", inline: $script_mysql
     mysql.vm.provision "shell", inline: "cat /configs/mysqld.cnf > /etc/mysql/mysql.conf.d/mysqld.cnf"
     mysql.vm.provision "shell", inline: "service mysql restart"
@@ -38,6 +42,8 @@ end
 
 ######################## Configuração VM - PUPPET COMO PROVISION ##############################
 # O Manifesto de configuração, encontra-se em: ./configs/manifests                            #  
+#                                                                                             #
+#                                                                                             #
 #                                                                                             #                              
 ###############################################################################################
 
@@ -55,6 +61,32 @@ end
         puppet.manifests_path = "./configs/manifests"
         puppet.manifest_file = "phpweb.pp"
         end
+    end
+
+######################## Configuração VM - ANSIBLE COMO PROVISION #############################
+# O Manifesto de configuração, encontra-se em: ./configs/manifests                            #  
+#                                                                                             #
+#                                                                                             #
+#                                                                                             #                              
+###############################################################################################
+
+    config.vm.define "mysqlserver" do |mysqlserver|
+        mysqlserver.vm.network "public_network", ip: "192.168.1.22"
+        mysqlserver.vm.provision "shell", inline: "cat /vagrant/configs/id_bionic.pub >> .ssh/authorized_keys"
+        end
+
+    config.vm.define "ansible" do |ansible|
+        ansible.vm.network "public_network", ip: "192.168.0.26"
+        ansible.vm.provision "shell",
+        inline: "cp /vagrant/id_bionic /home/vagrant && \
+                 chmod 600 /home/vagrant/id_bionic && \
+                 chown vagrant:vagrant /home/vagrant/id_bionic"
+
+        ansible.vm.provision "shell", 
+        inline:"apt update -y && \
+                apt install --yes software-properties-common && \
+                add-apt-repository --yes --update ppa:ansible/ansible && \
+                apt install -y ansible"
     end
 end
 # Aplicar integração: o Puppet precisa de um cliente na máquina virtual

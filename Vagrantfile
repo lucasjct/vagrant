@@ -1,10 +1,3 @@
-$script_mysql = <<-SCRIPT
-apt-get update && \
-apt-get install -y mysql-server-5.7 && \
-mysql -e "create user 'phpuser'@'%' identified by 'pass';"
-SCRIPT
-
-
 Vagrant.configure("2") do |config|
 # Escolha de qual SO desejo basear minha máquina. Buscar por Boxes na doc.
     config.vm.box = "ubuntu/bionic64"
@@ -12,14 +5,13 @@ Vagrant.configure("2") do |config|
 ######################## Configuração VM - SHELL COMO PROVISION ###############################
 #             Instalação do Mysql                                                             #  
 #                                                                                             #
-#                                                                                           #
 #                                                                                             #                              
 ###############################################################################################
 
 # Configuração multi-machine
     config.vm.define "mysql_db" do |mysql|
 
-# Posso definir qual porta do host pode acessar a VM (Guest). Forwarded Port 
+# Posso definir qual porta do host pode acessar a VM (Guest). Forwarded Port, por exemplo:
 #    mysql.vm.network "forwarded_port", guest: 80, host: 8889 
 #Public Network, que possibilita o acesso à máquina virtual por diversos computadores em uma única rede pública.
     mysql.vm.network "public_network", ip: "192.168.0.24"
@@ -29,7 +21,7 @@ Vagrant.configure("2") do |config|
         inline: "cat /configs/id_bionic.pub >> .ssh/authorized_keys"
 
     
-    mysql.vm.provision "shell", inline: $script_mysql
+    mysql.vm.provision "shell", path: "./configs/bash/bash_install.sh"
     mysql.vm.provision "shell", inline: "cat /configs/mysqld.cnf > /etc/mysql/mysql.conf.d/mysqld.cnf"
     mysql.vm.provision "shell", inline: "service mysql restart"
 
@@ -94,7 +86,7 @@ end
 
   
 # Estabelecer conexão ssh entre o host e VM
-# No host, gerar nao diretorio um par de chaves ssh com:
+# No host, gerar no diretorio um par de chaves ssh com:
 #ssh-keygen -t rsa
 
 #Acessar a máquina virtual e copiar o arquivo .pub da chave gerada acima no diretório vagrant:

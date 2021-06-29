@@ -1,6 +1,10 @@
 Vagrant.configure("2") do |config|
 # Escolha de qual SO desejo basear minha máquina. Buscar por Boxes na doc.
     config.vm.box = "ubuntu/bionic64"
+        config.vm.provider "virtualbox" do |vb|
+        vb.memory = 512
+        vb.cpus = 1
+    end
 
 ######################## Configuração VM - SHELL COMO PROVISION ###############################
 #             Instalação do Mysql                                                             #  
@@ -44,6 +48,14 @@ end
         phpweb.vm.network "forwarded_port", guest: 8889, host: 8889 
         phpweb.vm.network "public_network", ip: "192.168.0.25"
 
+#Configuração e provisionamento de recursos de hardware da VM para uma máquina em específico
+
+        phpweb.vm.provider "virtualbox" do |vb|
+            vb.memory = 1024
+            vb.cpus = 2
+            vb.name = "ubuntu_bionic_php7"
+        end
+
 # Instalação do Puppet na VM utilizando o provision bash.
         phpweb.vm.provision "shell",
          inline: "apt-get update && apt-get install -y puppet"
@@ -63,7 +75,7 @@ end
 ###############################################################################################
 
     config.vm.define "mysqlserver" do |mysqlserver|
-        mysqlserver.vm.network "public_network", ip: "192.168.1.22"
+        mysqlserver.vm.network "public_network", ip: "192.168.1.23"
         mysqlserver.vm.provision "shell", inline: "cat /vagrant/configs/id_bionic.pub >> .ssh/authorized_keys"
         end
 
@@ -79,6 +91,21 @@ end
                 apt install --yes software-properties-common && \
                 add-apt-repository --yes --update ppa:ansible/ansible && \
                 apt install -y ansible"
+
+        ansible.vm.provision "shell",
+            inline: "ansible-playbook -i /vagrant/configs/ansible/hosts \127
+                 /vagrant/configs/ansible/playbook.yml"
+    end
+
+# Configuração de outra Máquina dentro do Vagrantfile
+
+        config.vm.define "memcached" do |memcached|
+            config.vm.box = "centos/7"
+            memcached.vm.provider "virtualbox" do |vb|
+            vb.memory = 512
+            vb.cpus = 1
+            vb.name = "centos_memcached"
+        end
     end
 end
 # Aplicar integração: o Puppet precisa de um cliente na máquina virtual

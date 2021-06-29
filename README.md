@@ -30,14 +30,26 @@ Para subir o projeto:
 Para verificar o status da Máquina Virtual:  
 * `vagrant status`  
 
+Para verificar o status da Máquina Virtual de maneira global (consultar em qualquer diretório):  
+* `vagrant global-status` 
+
 Para entrar na Máquina Virtual:  
 * `vagrant ssh`  
 
 Verificar a release da Máquina Virtual:  
 * `vagrant ssh -config`   
 
-Para desligar a Máquina Virtual:  
-* `vagrant halt`  
+Para desligar a Máquina Virtual:   
+* `vagrant halt`   
 
-Para destroir a Máquina Virtual:
-* `vagrant destroy`  
+Para destroir a Máquina Virtual:   
+* `vagrant destroy`    
+
+Listar todos os Box:   
+* `vagrant box list`     
+
+Remover um Box:  
+`vagrant box remove <nome-do-box>`   
+
+Visualizar apenas máquinas configuradas  
+`vagrant global-status --prune`

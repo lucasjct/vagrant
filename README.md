@@ -52,4 +52,7 @@ Para destroir a Máquina Virtual:
 `vagrant box remove <nome-do-box>`   
 
 * Visualizar apenas máquinas configuradas:  
-`vagrant global-status --prune`
+`vagrant global-status --prune`  
+
+* Validar o arquivo Vagrantfile:   
+`vagrant validate`

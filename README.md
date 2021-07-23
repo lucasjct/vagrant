@@ -13,16 +13,34 @@ Projeto infraestrutura como código utilizando Vagrant
 
 * o Vagrant aceita diversos __provisions__, neste projeto, utilizamos *Ansible*, *Puppet* e *Shell*. Ele também possui seus __providers__, que são os hypervions das máquinas virtuais. Por padrão, ele possui suporte para __VirtualBox__ da Oracle.   
 
-### Executar o projeto:  
-
-Instalar as dependências:   
+## Instalar as dependências:   
 * [VirtualBox](https://www.virtualbox.org/) 
 :  
 `sudo apt-get install virtualbox`  
 * [Vagrant](https://www.vagrantup.com/):  
-`sudo apt-get install vagrant`  
+`sudo apt-get install vagrant`   
 
-#### No diretório clonado, executar os comandos:  
+* Neste projeto não é necessário, porém para criar um Vagrantfile novo, executo o seguinte comando:  
+`vagrant init`  
+Será criado uma arquivo com uma configuração default e com informações sobre o Vagrantfile.   
+
+* Para inicializar subir o Vagrant:
+`vagrant up`  
+
+obs: O sistema operacional criado na VM, vai ser aquele que você informar no Vagrantfile. Para escolher qual deseja, verifique os [boxes do Vagrant](https://app.vagrantup.com/boxes/search).  
+
+Os boxes serão informados neste primeiro bloco de código. Aqui, colocamos no Vagrantfile gerado a opção: "ubuntu/bionic64".   
+
+```Vagrant.configure("2") do |config|
+    config.vm.box = "ubuntu/bionic64"
+        config.vm.provider "virtualbox" do |vb|
+        vb.memory = 512
+        vb.cpus = 1
+    end
+```
+***  
+
+### Executar este projeto: 
 
 Para subir o projeto:
 * `vagrant up`  
@@ -55,4 +73,4 @@ Para destroir a Máquina Virtual:
 `vagrant global-status --prune`  
 
 * Validar o arquivo Vagrantfile:   
-`vagrant validate`
+`vagrant validate` 
